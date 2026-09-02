@@ -122,7 +122,7 @@ function deduplicarParcelasProjetadasNaAnalise(
   })
 
   const itensFiltrados: AnaliseFaturaApi["itens"] = []
-  const itensIgnorados = [...analise.itensIgnorados]
+  const itensIgnorados = [...(analise.itensIgnorados || [])]
 
   grupos.forEach((grupo) => {
     const ordenados = [...grupo].sort((a, b) => {

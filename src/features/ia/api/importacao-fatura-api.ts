@@ -114,11 +114,58 @@ export async function analisarFaturaCartaoApi(contaId: string, arquivo: File) {
   formData.append("contaId", contaId)
   formData.append("arquivo", arquivo)
 
-  const { data } = await http.post<AnaliseFaturaApi>("/faturas-cartao/analisar", formData, {
+  const { data } = await http.post<any>("/faturas-cartao/analisar", formData, {
     timeout: 300000, // 5 minutes
   })
 
-  return data
+  // Mock mapping to prevent frontend crashes due to backend returning incomplete mock data
+  const mappedData: AnaliseFaturaApi = {
+    ...data,
+    contaId,
+    contaNome: data.contaNome || "Conta Desconhecida",
+    nomeArquivo: arquivo.name,
+    referencia: data.referencia || new Date().toISOString().slice(0, 7), // YYYY-MM
+    cartaoFinal: data.cartaoFinal || null,
+    vencimento: data.vencimento || new Date().toISOString().slice(0, 10),
+    periodoInicio: data.periodoInicio || null,
+    periodoFim: data.periodoFim || null,
+    totalFatura: data.totalFatura || data.total || 0,
+    totalComprasIdentificadas: data.totalComprasIdentificadas || data.total || 0,
+    provedorCategorizacao: data.provedorCategorizacao || "gemini",
+    fonteExtracao: data.fonteExtracao || "gemini_vision",
+    resumo: data.resumo || {
+      totalItens: data.itens?.length || 0,
+      totalSelecionados: data.itens?.length || 0,
+      totalCategoriasNovas: 0,
+      totalParceladasBanco: 0,
+      totalParceladasExternas: 0,
+      totalAvista: data.itens?.length || 0,
+      valorSelecionado: data.total || 0,
+      valorIgnorado: 0,
+    },
+    itens: (data.itens || []).map((item: any, i: number) => ({
+      ...item,
+      id: item.id || `mock-id-${i}`,
+      descricao: item.descricao || "Item sem descrição",
+      valor: item.valor || 0,
+      dataLancamento: item.dataLancamento || item.data || new Date().toISOString().slice(0, 10),
+      dataCompraOriginal: item.dataCompraOriginal || item.data || null,
+      categoriaId: item.categoriaId || null,
+      categoriaNome: item.categoriaNome || "",
+      categoriaNova: !!item.categoriaNova,
+      grupoCategoria: item.grupoCategoria || "Outros",
+      tipoDespesaCategoria: item.tipoDespesaCategoria || "VARIAVEL",
+      secaoOrigem: item.secaoOrigem || "DESPESAS",
+      tipoParcelamento: item.tipoParcelamento || "AVISTA",
+      parcelaAtual: item.parcelaAtual || null,
+      totalParcelas: item.totalParcelas || null,
+      selecionado: item.selecionado !== undefined ? item.selecionado : true,
+      observacao: item.observacao || null,
+    })),
+    itensIgnorados: data.itensIgnorados || [],
+  }
+
+  return mappedData
 }
 
 export async function processarFaturaCartaoApi(payload: ProcessarFaturaRequestApi) {
