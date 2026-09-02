@@ -372,7 +372,25 @@ export function PaginaIa() {
       return
     }
 
-    await processarMutation.mutateAsync(analise)
+    const analiseAProcessar = {
+      ...analise,
+      itens: analise.itens.map((item) => {
+        const categoriaValida =
+          item.categoriaId && categoriasExistentes.some((c) => c.id === item.categoriaId)
+        
+        if (!categoriaValida) {
+          return {
+            ...item,
+            categoriaId: null,
+            categoriaNova: true,
+            categoriaNome: item.categoriaNome || "Outros",
+          }
+        }
+        return item
+      }),
+    }
+
+    await processarMutation.mutateAsync(analiseAProcessar)
   }
 
   const selecionarCategoria = (
@@ -781,7 +799,7 @@ export function PaginaIa() {
                                     lancamento sera tratado como compra a vista.
                                   </p>
 
-                                  {!item.categoriaId ? (
+                                  {valorCategoria === "__nova__" ? (
                                     <div className="mt-4 grid gap-4 md:grid-cols-[1fr_0.6fr]">
                                       <div className="space-y-1.5">
                                         <Label className="text-xs font-medium">
