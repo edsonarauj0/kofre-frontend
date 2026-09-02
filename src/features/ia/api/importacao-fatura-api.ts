@@ -199,3 +199,9 @@ export async function listarHistoricoImportacaoFaturaApi(contaId: string) {
     transacoes: item.transacoes || [],
   })) as HistoricoImportacaoFaturaApi[]
 }
+
+export async function excluirImportacaoFaturaApi(importacaoId: string) {
+  await garantirCsrfCookie()
+  const { data } = await http.delete(`/faturas-cartao/historico/${importacaoId}`)
+  return data
+}

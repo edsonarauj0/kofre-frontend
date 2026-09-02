@@ -12,6 +12,7 @@ import {
   IconRobot,
   IconSparkles,
   IconTool,
+  IconTrash,
 } from "@tabler/icons-react"
 
 import { useAuth } from "@/app/auth"
@@ -35,6 +36,7 @@ import { listarContasApi } from "@/features/contas/api/contas-api"
 import {
   type AnaliseFaturaApi,
   analisarFaturaCartaoApi,
+  excluirImportacaoFaturaApi,
   listarHistoricoImportacaoFaturaApi,
   processarFaturaCartaoApi,
 } from "@/features/ia/api/importacao-fatura-api"
@@ -263,6 +265,22 @@ export function PaginaIa() {
         erro instanceof Error
           ? erro.message
           : extrairMensagemErroApi(erro, "Nao foi possivel analisar a fatura.")
+      )
+    },
+  })
+
+  const excluirMutation = useMutation({
+    mutationFn: excluirImportacaoFaturaApi,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["historico-faturas"] })
+      await queryClient.invalidateQueries({ queryKey: ["transacoes"] })
+      await queryClient.invalidateQueries({ queryKey: ["contas"] })
+    },
+    onError: (erro) => {
+      console.error(
+        erro instanceof Error
+          ? erro.message
+          : extrairMensagemErroApi(erro, "Não foi possível excluir a importação.")
       )
     },
   })
@@ -1098,6 +1116,15 @@ export function PaginaIa() {
                           {historicoExpandidoId === importacao.id
                             ? "Ocultar transacoes"
                             : `Ver transacoes (${(importacao.transacoes || []).length})`}
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
+                          disabled={excluirMutation.isPending}
+                          onClick={() => void excluirMutation.mutateAsync(importacao.id)}
+                        >
+                          <IconTrash className="h-4 w-4" />
                         </Button>
                       </div>
                     </div>
