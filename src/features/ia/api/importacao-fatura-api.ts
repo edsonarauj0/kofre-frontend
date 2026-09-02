@@ -179,9 +179,23 @@ export async function processarFaturaCartaoApi(payload: ProcessarFaturaRequestAp
 }
 
 export async function listarHistoricoImportacaoFaturaApi(contaId: string) {
-  const { data } = await http.get<HistoricoImportacaoFaturaApi[]>("/faturas-cartao/historico", {
+  const { data } = await http.get<any[]>("/faturas-cartao/historico", {
     params: { contaId },
   })
 
-  return data
+  return data.map((item) => ({
+    id: item.id,
+    contaId: item.contaId,
+    contaNome: item.contaNome || "Conta Desconhecida",
+    referencia: item.referencia || "00/0000",
+    cartaoFinal: item.cartaoFinal || null,
+    nomeArquivo: item.arquivo || item.nomeArquivo || "Fatura Importada",
+    vencimento: item.vencimento || null,
+    totalFatura: item.totalFatura || null,
+    valorImportadoPdf: item.valorImportadoPdf || 0,
+    totalItensImportados: item.totalItensImportados || item.totalTransacoes || 0,
+    totalLancamentosGerados: item.totalTransacoes || 0,
+    importadoEm: item.data || item.importadoEm || new Date().toISOString(),
+    transacoes: item.transacoes || [],
+  })) as HistoricoImportacaoFaturaApi[]
 }

@@ -94,12 +94,15 @@ export function formatarPercentual(valor: number) {
   return `${valor >= 0 ? "+" : ""}${valor.toFixed(1)}%`
 }
 
-export function formatarData(valor: string) {
+export function formatarData(valor?: string | null) {
+  if (!valor) return "";
+  const date = new Date(valor);
+  if (isNaN(date.getTime())) return "";
   return new Intl.DateTimeFormat("pt-BR", {
     day: "2-digit",
     month: "short",
     year: "numeric",
-  }).format(new Date(valor))
+  }).format(date)
 }
 
 export function obterIniciais(nome: string) {

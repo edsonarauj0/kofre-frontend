@@ -329,14 +329,17 @@ export function PaginaIa() {
   const haDivergenciaComFatura = diferencaParaFatura >= 0.01
   const historicoImportacoes = historicoImportacoesQuery.data ?? []
 
-  const formatarDataHoraCurta = (valor: string) =>
-    new Intl.DateTimeFormat("pt-BR", {
+  const formatarDataHoraCurta = (valor?: string | null) => {
+    if (!valor) return ""
+    const date = new Date(valor)
+    if (isNaN(date.getTime())) return ""
+    return new Intl.DateTimeFormat("pt-BR", {
       day: "2-digit",
       month: "short",
-      year: "numeric",
       hour: "2-digit",
       minute: "2-digit",
-    }).format(new Date(valor))
+    }).format(date)
+  }
 
   const processarAnalise = async () => {
     if (!analise) {
