@@ -1094,7 +1094,7 @@ export function PaginaIa() {
                         >
                           {historicoExpandidoId === importacao.id
                             ? "Ocultar transacoes"
-                            : `Ver transacoes (${importacao.transacoes.length})`}
+                            : `Ver transacoes (${(importacao.transacoes || []).length})`}
                         </Button>
                       </div>
                     </div>
@@ -1123,15 +1123,14 @@ export function PaginaIa() {
                       <p className="mt-1">Processada em {formatarDataHoraCurta(importacao.importadoEm)}</p>
                     </div>
                     {historicoExpandidoId === importacao.id ? (
-                      <div className="mt-4 border-t border-border/70 pt-4">
-                        <div className="mb-3 flex items-center justify-between gap-3">
-                          <p className="text-sm font-medium">Transacoes desta importacao</p>
-                          <p className="text-xs text-muted-foreground">
-                            {importacao.transacoes.length} registro(s) vinculados
+                      <div className="mt-4 border-t pt-4">
+                        <div className="mb-3 flex items-center justify-between">
+                          <p className="text-sm font-medium">
+                            {(importacao.transacoes || []).length} registro(s) vinculados
                           </p>
                         </div>
                         <div className="space-y-2">
-                          {importacao.transacoes.map((transacao) => (
+                          {(importacao.transacoes || []).map((transacao) => (
                             <div
                               key={transacao.id}
                               className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-border/70 px-3 py-2"
