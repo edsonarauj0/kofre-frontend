@@ -647,7 +647,7 @@ export function PaginaIa() {
                           <div className="space-y-3">
                             {analise.itens.map((item) => {
                               const categoriaValida = item.categoriaId && categoriasExistentes.some(c => c.id === item.categoriaId);
-                              const valorCategoria = categoriaValida ? item.categoriaId : "__nova__"
+                              const valorCategoria = categoriaValida ? (item.categoriaId as string) : "__nova__"
 
                               return (
                                 <div key={item.id} className="rounded-md border border-border/70 p-4">
