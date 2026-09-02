@@ -115,7 +115,7 @@ export async function analisarFaturaCartaoApi(contaId: string, arquivo: File) {
   formData.append("arquivo", arquivo)
 
   const { data } = await http.post<AnaliseFaturaApi>("/faturas-cartao/analisar", formData, {
-    timeout: 60000,
+    timeout: 300000, // 5 minutes
   })
 
   return data
@@ -125,7 +125,7 @@ export async function processarFaturaCartaoApi(payload: ProcessarFaturaRequestAp
   await garantirCsrfCookie()
 
   const { data } = await http.post<ProcessarFaturaResponseApi>("/faturas-cartao/processar", payload, {
-    timeout: 60000,
+    timeout: 300000, // 5 minutes
   })
 
   return data
