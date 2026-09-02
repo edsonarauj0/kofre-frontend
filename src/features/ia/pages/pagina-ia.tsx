@@ -646,7 +646,8 @@ export function PaginaIa() {
 
                           <div className="space-y-3">
                             {analise.itens.map((item) => {
-                              const valorCategoria = item.categoriaId ?? "__nova__"
+                              const categoriaValida = item.categoriaId && categoriasExistentes.some(c => c.id === item.categoriaId);
+                              const valorCategoria = categoriaValida ? item.categoriaId : "__nova__"
 
                               return (
                                 <div key={item.id} className="rounded-md border border-border/70 p-4">
@@ -670,7 +671,7 @@ export function PaginaIa() {
                                       <Badge variant="outline">{item.secaoOrigem}</Badge>
                                       {itemExigeRevisaoCategoria(item) ? (
                                         <Badge variant="outline">Revisao IA</Badge>
-                                      ) : item.categoriaNova ? (
+                                      ) : item.categoriaNova || !categoriaValida ? (
                                         <Badge variant="outline">Nova categoria</Badge>
                                       ) : (
                                         <Badge variant="outline">Categoria existente</Badge>
