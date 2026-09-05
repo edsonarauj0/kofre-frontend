@@ -124,6 +124,7 @@ export async function processarFaturaCartaoApi(payload: ProcessarFaturaRequestAp
     timeout: 60000,
   })
 
+  limparCacheTransacoes()
   return data
 }
 
