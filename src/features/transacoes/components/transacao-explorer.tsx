@@ -801,8 +801,7 @@ export function TransacaoExplorerProvider({
       let divisoesPayload:
         | Array<{
             nome?: string
-            valor?: number
-            percentual?: number
+            valor: number
             perfilId?: string
           }>
         | null = null
@@ -897,8 +896,7 @@ export function TransacaoExplorerProvider({
         divisoesPayload = divisoesNormalizadas.map((divisao) => ({
           perfilId: divisao.perfilId,
           nome: divisao.nome,
-          valor: divisao.valor,
-          percentual: divisao.percentual,
+          valor: divisao.valor || 0,
         }))
       }
 

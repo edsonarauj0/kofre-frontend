@@ -1170,7 +1170,7 @@ export function PaginaTransacoes() {
     let divisoesPayload:
       | Array<{
         nome?: string
-        valor?: number
+        valor: number
         percentual?: number
         perfilId?: string
       }>

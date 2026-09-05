@@ -1,5 +1,5 @@
 import { http } from "@/shared/lib/http"
-import type { TipoTransacao, Transacao } from "@/shared/types/financeiro"
+import type { TipoTransacao, Transacao, StatusPagamentoTransacao } from "@/shared/types/financeiro"
 
 export interface CategoriaApi {
   id: string
@@ -57,6 +57,13 @@ interface CriarTransacaoRequest {
   meioPagamento?: string | null
   contaId: string
   categoriaId: string
+  statusPagamento?: string | null
+  dataVencimento?: string | null
+  diaRecorrenciaMensal?: number | null
+  dataAgendamentoPagamento?: string | null
+  dataPagamento?: string | null
+  contaPagamentoId?: string | null
+  recorrente?: boolean
   quantidadeParcelas?: number | null
   divisoes?: Array<{
     nome?: string
@@ -207,4 +214,18 @@ export async function atualizarTransacaoApi(
 export async function excluirTransacaoApi(transacaoId: string) {
   await http.delete(`/transacoes/${transacaoId}`)
   limparCacheTransacoes()
+}
+
+export async function atualizarStatusPagamentoTransacaoApi(
+  transacaoId: string,
+  payload: {
+    statusPagamento: StatusPagamentoTransacao
+    dataAgendamentoPagamento?: string | null
+    dataPagamento?: string | null
+    contaPagamentoId?: string | null
+  }
+) {
+  const { data } = await http.patch<TransacaoResponseApi>(`/transacoes/${transacaoId}/status-pagamento`, payload)
+  limparCacheTransacoes()
+  return data
 }

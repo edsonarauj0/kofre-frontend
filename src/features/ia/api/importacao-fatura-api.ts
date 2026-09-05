@@ -1,4 +1,5 @@
 import { garantirCsrfCookie, http } from "@/shared/lib/http"
+import { limparCacheTransacoes } from "@/features/transacoes/api/transacoes-api"
 
 export interface AnaliseFaturaResumoApi {
   totalItens: number
