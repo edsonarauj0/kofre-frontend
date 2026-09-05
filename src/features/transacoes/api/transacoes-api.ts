@@ -1,9 +1,5 @@
 import { http } from "@/shared/lib/http"
-import type {
-  StatusPagamentoTransacao,
-  TipoTransacao,
-  Transacao,
-} from "@/shared/types/financeiro"
+import type { TipoTransacao, Transacao } from "@/shared/types/financeiro"
 
 export interface CategoriaApi {
   id: string
@@ -24,16 +20,9 @@ interface TransacaoResponseApi {
   valorOriginal?: number | null
   dataLancamento: string
   observacao?: string | null
-  recorrente?: boolean
   meioPagamento?: string | null
   contaId: string
-  contaPagamentoId?: string | null
   categoriaId: string
-  statusPagamento?: StatusPagamentoTransacao | null
-  dataVencimento?: string | null
-  diaRecorrenciaMensal?: number | null
-  dataAgendamentoPagamento?: string | null
-  dataPagamento?: string | null
   compartilhada?: boolean
   grupoCompartilhamentoId?: string | null
   parcelada?: boolean
@@ -44,7 +33,6 @@ interface TransacaoResponseApi {
     id: string
     nome: string
     valor: number
-    percentual?: number | null
     perfilId?: string | null
     perfilNome?: string | null
   }>
@@ -66,21 +54,13 @@ interface CriarTransacaoRequest {
   valor: number
   dataLancamento: string
   observacao?: string
-  recorrente?: boolean
   meioPagamento?: string | null
   contaId: string
   categoriaId: string
   quantidadeParcelas?: number | null
-  statusPagamento?: StatusPagamentoTransacao | null
-  dataVencimento?: string | null
-  diaRecorrenciaMensal?: number | null
-  dataAgendamentoPagamento?: string | null
-  dataPagamento?: string | null
-  contaPagamentoId?: string | null
   divisoes?: Array<{
     nome?: string
-    valor?: number
-    percentual?: number
+    valor: number
     perfilId?: string
   }> | null
 }
@@ -104,7 +84,7 @@ function mapearTransacao(
     tag: "api",
     data: transacao.dataLancamento,
     observacao: transacao.observacao,
-    recorrente: transacao.recorrente ?? false,
+    recorrente: false,
     contaId: transacao.contaId,
     contaTipo: conta?.tipo as Transacao["contaTipo"],
     contaInstituicao: conta?.instituicao,
@@ -113,13 +93,7 @@ function mapearTransacao(
     categoriaGrupo: categoria?.grupo,
     valorOriginal: transacao.valorOriginal ?? null,
     meioPagamento: (transacao.meioPagamento ?? null) as Transacao["meioPagamento"],
-    statusPagamento: (transacao.statusPagamento ?? null) as Transacao["statusPagamento"],
-    dataVencimento: transacao.dataVencimento ?? null,
-    diaRecorrenciaMensal: transacao.diaRecorrenciaMensal ?? null,
-    dataAgendamentoPagamento: transacao.dataAgendamentoPagamento ?? null,
-    dataPagamento: transacao.dataPagamento ?? null,
     compartilhada: transacao.compartilhada ?? false,
-    contaPagamentoId: transacao.contaPagamentoId ?? null,
     grupoCompartilhamentoId: transacao.grupoCompartilhamentoId ?? null,
     parcelada: transacao.parcelada ?? false,
     parcelaNumero: transacao.parcelaNumero ?? null,
@@ -130,7 +104,6 @@ function mapearTransacao(
         id: divisao.id,
         nome: divisao.nome,
         valor: divisao.valor,
-        percentual: divisao.percentual ?? null,
         perfilId: divisao.perfilId ?? null,
         perfilNome: divisao.perfilNome ?? null,
       })) ?? [],
@@ -179,16 +152,46 @@ export async function excluirGrupoCategoriaApi(grupoAtual: string) {
   await http.delete(`/categorias/grupos/${encodeURIComponent(grupoAtual)}`)
 }
 
+export const TRANSACOES_CACHE_KEY = "@kofre/transacoes_cache"
+
+export function limparCacheTransacoes() {
+  if (typeof window !== "undefined") {
+    localStorage.removeItem(TRANSACOES_CACHE_KEY)
+  }
+}
+
 export async function listarTransacoesApi(
   categorias: CategoriaApi[],
   contas: { id: string; nome: string; tipo?: string; instituicao?: string }[]
 ) {
+  if (typeof window !== "undefined") {
+    const cached = localStorage.getItem(TRANSACOES_CACHE_KEY)
+    if (cached) {
+      try {
+        const data = JSON.parse(cached) as TransacaoResponseApi[]
+        return data.map((item) => mapearTransacao(item, categorias, contas))
+      } catch (e) {
+        console.error("Falha ao ler cache", e)
+      }
+    }
+  }
+
   const { data } = await http.get<TransacaoResponseApi[]>("/transacoes")
+  
+  if (typeof window !== "undefined") {
+    try {
+      localStorage.setItem(TRANSACOES_CACHE_KEY, JSON.stringify(data))
+    } catch (e) {
+      console.warn("Falha ao salvar cache (espaço?)", e)
+    }
+  }
+  
   return data.map((item) => mapearTransacao(item, categorias, contas))
 }
 
 export async function criarTransacaoApi(payload: CriarTransacaoRequest) {
   const { data } = await http.post<TransacaoResponseApi>("/transacoes", payload)
+  limparCacheTransacoes()
   return data
 }
 
@@ -197,25 +200,11 @@ export async function atualizarTransacaoApi(
   payload: CriarTransacaoRequest
 ) {
   const { data } = await http.put<TransacaoResponseApi>(`/transacoes/${transacaoId}`, payload)
-  return data
-}
-
-export async function atualizarStatusPagamentoTransacaoApi(
-  transacaoId: string,
-  payload: {
-    statusPagamento: StatusPagamentoTransacao
-    dataAgendamentoPagamento?: string | null
-    dataPagamento?: string | null
-    contaPagamentoId?: string | null
-  }
-) {
-  const { data } = await http.patch<TransacaoResponseApi>(
-    `/transacoes/${transacaoId}/status-pagamento`,
-    payload
-  )
+  limparCacheTransacoes()
   return data
 }
 
 export async function excluirTransacaoApi(transacaoId: string) {
   await http.delete(`/transacoes/${transacaoId}`)
+  limparCacheTransacoes()
 }
