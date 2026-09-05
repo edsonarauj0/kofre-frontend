@@ -295,7 +295,7 @@ export function PaginaIa() {
   const excluirMutation = useMutation({
     mutationFn: excluirImportacaoFaturaApi,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["historico-faturas"] })
+      await queryClient.invalidateQueries({ queryKey: ["historico-importacao-fatura"] })
       await queryClient.invalidateQueries({ queryKey: ["transacoes"] })
       await queryClient.invalidateQueries({ queryKey: ["contas"] })
     },

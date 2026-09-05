@@ -21,6 +21,11 @@ interface TransacaoResponseApi {
   dataLancamento: string
   observacao?: string | null
   meioPagamento?: string | null
+  statusPagamento?: string | null
+  dataVencimento?: string | null
+  dataAgendamentoPagamento?: string | null
+  dataPagamento?: string | null
+  contaPagamentoId?: string | null
   contaId: string
   categoriaId: string
   compartilhada?: boolean
@@ -100,6 +105,11 @@ function mapearTransacao(
     categoriaGrupo: categoria?.grupo,
     valorOriginal: transacao.valorOriginal ?? null,
     meioPagamento: (transacao.meioPagamento ?? null) as Transacao["meioPagamento"],
+    statusPagamento: (transacao.statusPagamento ?? null) as Transacao["statusPagamento"],
+    dataVencimento: transacao.dataVencimento ?? null,
+    dataAgendamentoPagamento: transacao.dataAgendamentoPagamento ?? null,
+    dataPagamento: transacao.dataPagamento ?? null,
+    contaPagamentoId: transacao.contaPagamentoId ?? null,
     compartilhada: transacao.compartilhada ?? false,
     grupoCompartilhamentoId: transacao.grupoCompartilhamentoId ?? null,
     parcelada: transacao.parcelada ?? false,

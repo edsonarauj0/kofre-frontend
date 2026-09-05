@@ -220,7 +220,8 @@ function corComFallback(cor?: string) {
   return cor && cor.trim().length > 0 ? cor : "#94a3b8"
 }
 
-function ehEmojiOuCaractereVisual(valor: string) {
+function ehEmojiOuCaractereVisual(valor?: string | null) {
+  if (!valor) return false
   return !/^[a-z0-9-_\s]+$/i.test(valor.trim())
 }
 
