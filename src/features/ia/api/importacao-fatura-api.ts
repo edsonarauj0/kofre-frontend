@@ -102,12 +102,13 @@ export interface ProcessarFaturaResponseApi {
   transacaoIdsCriadas: string[]
 }
 
-export async function analisarFaturaCartaoApi(contaId: string, arquivo: File) {
+export async function analisarFaturaCartaoApi(contaId: string, arquivo: File, referencia: string) {
   await garantirCsrfCookie()
 
   const formData = new FormData()
   formData.append("contaId", contaId)
   formData.append("arquivo", arquivo)
+  formData.append("referencia", referencia)
 
   const { data } = await http.post<AnaliseFaturaApi>("/faturas-cartao/analisar", formData, {
     timeout: 60000,

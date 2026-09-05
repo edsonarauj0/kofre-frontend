@@ -206,6 +206,7 @@ export function PaginaIa() {
   const [modalImportacaoAberto, setModalImportacaoAberto] = React.useState(false)
   const [modalRascunhoAberto, setModalRascunhoAberto] = React.useState(false)
   const [contaId, setContaId] = React.useState("")
+  const [referencia, setReferencia] = React.useState(() => new Date().toISOString().slice(0, 7))
   const [arquivo, setArquivo] = React.useState<File | null>(null)
   const [analise, setAnalise] = React.useState<AnaliseFaturaApi | null>(null)
   const [historicoExpandidoId, setHistoricoExpandidoId] = React.useState<string | null>(null)
@@ -250,7 +251,10 @@ export function PaginaIa() {
       if (!contaId) {
         throw new Error("Selecione o cartao ou conta de destino")
       }
-      return analisarFaturaCartaoApi(contaId, arquivo)
+      if (!referencia) {
+        throw new Error("Informe o mes de referencia da fatura")
+      }
+      return analisarFaturaCartaoApi(contaId, arquivo, referencia)
     },
     onSuccess: (data) => {
       setMensagemErro("")
@@ -520,12 +524,12 @@ export function PaginaIa() {
                   </DialogHeader>
 
                   <div className="space-y-5">
-                    <div className="grid gap-4 md:grid-cols-2">
+                    <div className="grid gap-4 md:grid-cols-3">
                       <div className="space-y-1.5">
-                        <Label className="text-xs font-medium">Cartao ou conta destino</Label>
+                        <Label className="text-xs font-medium">Cartao destino</Label>
                         <Select value={contaId} onValueChange={setContaId}>
                           <SelectTrigger>
-                            <SelectValue placeholder="Selecione onde a fatura sera importada" />
+                            <SelectValue placeholder="Destino" />
                           </SelectTrigger>
                           <SelectContent>
                             {contasSelecionaveis.map((conta) => (
@@ -533,7 +537,7 @@ export function PaginaIa() {
                                 <div className="flex items-center gap-2">
                                   <LogoBanco instituicao={conta.instituicao} tamanho="sm" />
                                   <span>
-                                    {conta.nome} • {conta.instituicao}
+                                    {conta.nome}
                                   </span>
                                 </div>
                               </SelectItem>
@@ -542,7 +546,15 @@ export function PaginaIa() {
                         </Select>
                       </div>
                       <div className="space-y-1.5">
-                        <Label className="text-xs font-medium">Fatura em PDF</Label>
+                        <Label className="text-xs font-medium">Mes de referencia</Label>
+                        <Input
+                          type="month"
+                          value={referencia}
+                          onChange={(e) => setReferencia(e.target.value)}
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label className="text-xs font-medium">Fatura (PDF)</Label>
                         <Input
                           accept=".pdf,application/pdf"
                           type="file"
