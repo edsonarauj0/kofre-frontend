@@ -192,21 +192,22 @@ const opcoesEmojiCategoria = [
   { valor: "📈", rotulo: "Investimento" },
 ] as const
 
-function normalizarTexto(valor: string) {
+function normalizarTexto(valor: string | null | undefined) {
+  if (!valor) return ""
   return valor
     .normalize("NFD")
     .replaceAll(/[\u0300-\u036f]/g, "")
     .toLowerCase()
 }
 
-function obterAparenciaGrupo(grupo: string) {
+function obterAparenciaGrupo(grupo: string | null | undefined) {
   const grupoNormalizado = normalizarTexto(grupo)
 
   return (
     aparenciasGrupo.find((item) =>
       item.palavras.some((palavra) => grupoNormalizado.includes(normalizarTexto(palavra)))
     ) ?? {
-      titulo: grupo,
+      titulo: grupo || "Outros grupos",
       descricao: "Colecao personalizada de categorias do seu fluxo.",
       destaque: "from-zinc-100/90 via-white to-white",
       brilho: "bg-zinc-500/12 text-zinc-700",

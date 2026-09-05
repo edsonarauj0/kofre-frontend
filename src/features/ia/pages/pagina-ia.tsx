@@ -51,7 +51,8 @@ import {
   parseValorDigitado,
 } from "@/shared/lib/formatadores"
 
-function normalizarDescricaoImportacao(descricao: string) {
+function normalizarDescricaoImportacao(descricao: string | null | undefined) {
+  if (!descricao) return ""
   return descricao
     .normalize("NFD")
     .replace(/\p{Diacritic}/gu, "")
