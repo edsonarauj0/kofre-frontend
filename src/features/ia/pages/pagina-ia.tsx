@@ -214,6 +214,24 @@ export function PaginaIa() {
   const [mensagemErro, setMensagemErro] = React.useState("")
   const [mensagemSucesso, setMensagemSucesso] = React.useState("")
 
+  React.useEffect(() => {
+    try {
+      const salvo = localStorage.getItem("@kofre/rascunho_fatura_ia")
+      if (salvo) {
+        setAnalise(JSON.parse(salvo))
+        setModalRascunhoAberto(true)
+      }
+    } catch (e) {}
+  }, [])
+
+  React.useEffect(() => {
+    if (analise) {
+      localStorage.setItem("@kofre/rascunho_fatura_ia", JSON.stringify(analise))
+    } else {
+      localStorage.removeItem("@kofre/rascunho_fatura_ia")
+    }
+  }, [analise])
+
   const contasQuery = useQuery({
     queryKey: ["contas"],
     queryFn: listarContasApi,
@@ -312,6 +330,7 @@ export function PaginaIa() {
           data.valorTotalProcessado
         )}, incluindo parcelas futuras quando identificadas.`
       )
+      setAnalise(null)
       setModalRascunhoAberto(false)
     },
     onError: (erro) => {
@@ -916,15 +935,25 @@ export function PaginaIa() {
                       </div>
                     )}
 
-                    <DialogFooter className="border-t px-6 py-4">
+                    <DialogFooter className="flex w-full items-center justify-between border-t px-6 py-4 sm:justify-between">
+                      <Button
+                        variant="ghost"
+                        onClick={() => {
+                          setAnalise(null)
+                          setModalRascunhoAberto(false)
+                        }}
+                      >
+                        <IconTrash className="mr-2 size-4" />
+                        Descartar rascunho
+                      </Button>
                       <Button
                         disabled={processarMutation.isPending || itensSelecionados.length === 0 || !analise}
                         onClick={() => void processarAnalise()}
                       >
                         {processarMutation.isPending ? (
-                          <IconLoader2 className="animate-spin" />
+                          <IconLoader2 className="mr-2 size-4 animate-spin" />
                         ) : (
-                          <IconReceipt2 />
+                          <IconReceipt2 className="mr-2 size-4" />
                         )}
                         Processar no sistema
                       </Button>
