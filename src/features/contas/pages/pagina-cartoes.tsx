@@ -62,6 +62,7 @@ import { atualizarContaApi, criarContaApi, excluirContaApi, listarContasApi } fr
 import { listarCategoriasApi, listarTransacoesApi } from "@/features/transacoes/api/transacoes-api"
 import { CabecalhoPagina } from "@/shared/components/cabecalho-pagina"
 import { LogoBanco } from "@/shared/components/logo-banco"
+import { toast } from "sonner"
 import { bancosDisponiveis, obterBancoPorInstituicao } from "@/shared/lib/bancos"
 import {
   formatarMoeda,
@@ -1244,20 +1245,11 @@ export function PaginaCartoes() {
     mutationFn: criarContaApi,
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["contas"] })
-      resetCartao({
-        nome: "",
-        instituicao: bancosDisponiveis[0]?.nome ?? "",
-        limiteCredito: "0",
-        diaFechamento: "",
-        diaVencimento: "",
-      })
-      setMensagemErro("")
-      setMensagemSucesso("Cartão salvo com sucesso.")
-      setTimeout(() => fecharSheet(), 800)
+      toast.success("Cartão salvo com sucesso.")
+      fecharSheet()
     },
     onError: () => {
-      setMensagemSucesso("")
-      setMensagemErro("Não foi possível salvar o cartão.")
+      toast.error("Não foi possível salvar o cartão.")
     },
   })
 
@@ -1278,13 +1270,11 @@ export function PaginaCartoes() {
     }) => atualizarContaApi(id, payload),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["contas"] })
-      setMensagemErro("")
-      setMensagemSucesso("Cartão salvo com sucesso.")
-      setTimeout(() => fecharSheet(), 800)
+      toast.success("Cartão salvo com sucesso.")
+      fecharSheet()
     },
     onError: () => {
-      setMensagemSucesso("")
-      setMensagemErro("Não foi possível atualizar o cartão.")
+      toast.error("Não foi possível atualizar o cartão.")
     },
   })
 
@@ -1293,6 +1283,11 @@ export function PaginaCartoes() {
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["contas"] })
       await queryClient.invalidateQueries({ queryKey: ["transacoes"] })
+      toast.success("Cartão excluído com sucesso.")
+      fecharSheet()
+    },
+    onError: () => {
+      toast.error("Não foi possível excluir o cartão.")
     },
   })
 

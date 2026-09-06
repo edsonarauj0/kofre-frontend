@@ -96,7 +96,13 @@ export function formatarPercentual(valor: number) {
 
 export function formatarData(valor?: string | null) {
   if (!valor) return "";
-  const date = new Date(valor);
+  const partes = valor.split("-");
+  let date: Date;
+  if (partes.length === 3) {
+    date = new Date(Number(partes[0]), Number(partes[1]) - 1, Number(partes[2]));
+  } else {
+    date = new Date(valor);
+  }
   if (isNaN(date.getTime())) return "";
   return new Intl.DateTimeFormat("pt-BR", {
     day: "2-digit",

@@ -20,6 +20,7 @@ import {
   IconTrash,
   IconWallet,
 } from "@tabler/icons-react"
+import { toast } from "sonner"
 
 import { useAuth } from "@/app/auth"
 import { usePerfilFinanceiro } from "@/app/perfil-financeiro"
@@ -527,8 +528,12 @@ export function PaginaTransacoes() {
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["transacoes"] })
       await queryClient.invalidateQueries({ queryKey: ["contas"] })
+      toast.success("Transação salva com sucesso.")
       setAberto(false)
     },
+    onError: () => {
+      toast.error("Ocorreu um erro ao salvar a transação.")
+    }
   })
 
   const resetarFormulario = React.useCallback(() => {
@@ -1131,8 +1136,12 @@ export function PaginaTransacoes() {
       await queryClient.invalidateQueries({ queryKey: ["transacoes"] })
       await queryClient.invalidateQueries({ queryKey: ["contas"] })
       setSelecionadas([])
+      toast.success("Transações excluídas com sucesso.")
       setConfirmacaoExclusaoEmLoteAberta(false)
     },
+    onError: () => {
+      toast.error("Ocorreu um erro ao excluir transações.")
+    }
   })
 
   const limparFiltros = () => {

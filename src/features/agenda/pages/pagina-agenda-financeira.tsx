@@ -44,6 +44,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet"
+import { toast } from "sonner"
 import type { Conta, Transacao } from "@/shared/types/financeiro"
 
 type VisualizacaoAgenda = "CALENDARIO" | "LISTA"
@@ -727,6 +728,11 @@ export function PaginaAgendaFinanceira() {
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["transacoes"] })
       await queryClient.invalidateQueries({ queryKey: ["contas"] })
+      toast.success("Status atualizado com sucesso!")
+      setItemSelecionadoId(null)
+    },
+    onError: () => {
+      toast.error("Ocorreu um erro ao atualizar o status.")
     },
   })
 
