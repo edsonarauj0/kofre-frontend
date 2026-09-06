@@ -442,7 +442,7 @@ export function TransacaoExplorerProvider({
     setValue,
     getValues,
     watch,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isDirty },
   } = useForm<FormularioEdicaoTransacao>({
     resolver: zodResolver(schemaEdicao),
     defaultValues: {
@@ -641,6 +641,8 @@ export function TransacaoExplorerProvider({
   }, [dividirTransacao, divisoesFormulario, setValue, totalEditado])
 
   React.useEffect(() => {
+    if (!isDirty) return
+
     const categoriaAtual = getValues("categoriaId")
     if (!categoriaAtual) {
       return
@@ -650,9 +652,11 @@ export function TransacaoExplorerProvider({
     if (!categoriaSelecionada || categoriaSelecionada.tipo !== tipoEditado) {
       setValue("categoriaId", "")
     }
-  }, [categorias, getValues, setValue, tipoEditado])
+  }, [categorias, getValues, setValue, tipoEditado, isDirty])
 
   React.useEffect(() => {
+    if (!isDirty) return
+
     if (!ehDespesa || !recorrenteEditado) {
       if (diaRecorrenciaMensalEditado) {
         setValue("diaRecorrenciaMensal", "")
@@ -673,9 +677,12 @@ export function TransacaoExplorerProvider({
     getValues,
     recorrenteEditado,
     setValue,
+    isDirty,
   ])
 
   React.useEffect(() => {
+    if (!isDirty) return
+
     if (tipoEditado !== "DESPESA" && parcelada) {
       setValue("parcelada", false)
       setValue("quantidadeParcelas", "1")
@@ -695,9 +702,11 @@ export function TransacaoExplorerProvider({
       const primeiroMeio = obterMeiosPagamentoPorContaTipo(contaEditadaObj?.tipo)[0]?.valor ?? ""
       setValue("meioPagamento", primeiroMeio)
     }
-  }, [contaEditadaObj?.tipo, dividirTransacao, parcelada, setValue, tipoEditado])
+  }, [contaEditadaObj?.tipo, dividirTransacao, parcelada, setValue, tipoEditado, isDirty])
 
   React.useEffect(() => {
+    if (!isDirty) return
+
     if (tipoEditado === "TRANSFERENCIA") {
       setValue("statusPagamento", "PAGO")
       setValue("dataVencimento", "")
@@ -745,6 +754,7 @@ export function TransacaoExplorerProvider({
     setValue,
     statusPagamentoEditado,
     tipoEditado,
+    isDirty,
   ])
 
   React.useEffect(() => {
