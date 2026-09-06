@@ -317,12 +317,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         isActive: pathname === "/transacoes",
       },
       {
-        title: "Agenda financeira",
-        url: "/agenda-financeira",
-        icon: <IconCalendarMonth />,
-        isActive: pathname === "/agenda-financeira",
-      },
-      {
         title: "Contas",
         url: "/contas",
         icon: <IconBuildingBank />,
