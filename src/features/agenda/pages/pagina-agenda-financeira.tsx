@@ -490,13 +490,11 @@ export function PaginaAgendaFinanceira() {
           return
         }
 
-        const dataVencimento =
-          transacao.dataVencimento ??
-          calcularDataVencimentoCartao(
-            transacao.data,
-            conta.diaFechamento,
-            conta.diaVencimento
-          )
+        const dataVencimento = calcularDataVencimentoCartao(
+          transacao.data,
+          conta.diaFechamento,
+          conta.diaVencimento
+        )
 
         const referencia = calcularReferenciaFaturaCartao(transacao.data, conta.diaFechamento)
         const chave = `${conta.id}-${dataVencimento}`
